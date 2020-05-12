@@ -29,7 +29,7 @@ class Lexer:
         self.array = TokenArray()
         self.cur_position=0
         self.cur_char = self.file[0]
-        self.line = 0
+        self.line = 1
         self.create_tokens()
 
     def next(self):
@@ -101,7 +101,7 @@ class Lexer:
             elif(self.cur_char.isdigit()):
                 self.make_number()
             else:
-                raise Exception("unknown char in line {}".format(self.line));
+                raise Exception("unknown char {} in line {}".format(self.cur_char,self.line));
 
 
 

@@ -12,17 +12,26 @@ class Token:
 class TokenArray:
     def __init__(self):
         self.lis = []
-        self.counter=0
+        self.cur_position=0
+        self.cur_char = ""
 
     def push(self,val):
         self.lis.append(val)
 
-    def get(self):
-        self.counter+=1
-        return self.list[self.counter-1]
+    def next(self):
+        if(self.cur_position+1 < len(self.lis)):
+            self.cur_position+=1
+        self.cur_char = self.lis[self.cur_position]
+
+    def current(self):
+        return self.lis[self.cur_position]
+
 
     def __str__(self):
         j=""
         for i in self.lis:
             j+=str(i)+"\n"
         return j
+
+    def __len__(self):
+        return len(lis)
