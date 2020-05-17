@@ -1,6 +1,6 @@
 from utils import Token,TokenArray
 
-keyword = ['if', 'for', 'while','int','float']
+keyword = ['if', 'for','else', 'while','int','float']
 comparison = ["==", ">", "<", "<=", "!=", '>=']
 
 delimiters = {
@@ -8,15 +8,29 @@ delimiters = {
     ')': "R1",
     '{': "L2",
     '}': "R2",
-    ';': 'SEMICOLON'
+    ';': 'SEMICOLON',
+    ',':'SEPERATOR'
 }
 error = ['!', '@', '$', '&', '~', '`']
 
 
 seperate_operations="(){ }[]\t\n+-*/=><"
-operators = ['+', '-', '*', '/', '%', '^', '=', '&', '|', '==', '>', '<', '!', '++', '--', '+=', '!=', '-=', '&&',
+operations = ['+', '-', '*', '/', '%', '^', '=', '&', '|', '==', '>', '<', '!', '++', '--', '+=', '!=', '-=', '&&',
             '||', '>=', '<=']
 
+TT = {
+    '=':'Assign',
+    '<':'COMPARISON',
+    '>':'COMPARISON',
+    '<=':'COMPARISON',
+    '>=':'COMPARISON',
+    '==':'COMPARISON',
+    '!=':'COMPARISON',
+    '+':'ARTH',
+    '-':'ARTH',
+    '*':'ARTH',
+    '/':'ARTH',
+}
 
 
 def valid_word(word):
@@ -40,8 +54,12 @@ class Lexer:
 
 
     def make_operators(self):
-        t = Token("OPERATOR",self.cur_char,self.line)
-        self.next()
+        k=""
+        while((k+self.cur_char) in operations ):
+            k+=self.cur_char
+            self.next()
+
+        t = Token(TT[k],k,self.line)
         self.array.push(t)
 
     def make_delimiter(self):
@@ -59,7 +77,7 @@ class Lexer:
             t = Token(cur.upper(),cur,self.line)
             self.array.push(t)
         else:
-            t = Token("VAR",cur,self.line)
+            t = Token("VAR",'V'+cur,self.line)
             self.array.push(t)
 
     def make_number(self):
@@ -92,7 +110,7 @@ class Lexer:
                 self.next()
             elif(self.cur_char in '\t '):
                 self.next()
-            elif(self.cur_char in operators):
+            elif(self.cur_char in operations):
                 self.make_operators()
             elif(self.cur_char in delimiters):
                 self.make_delimiter()
