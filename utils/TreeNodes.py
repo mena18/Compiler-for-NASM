@@ -48,8 +48,23 @@ class IfStatement:
             return f'[IF {self.if_condition} THEN {self.if_body} ELSE {self.else_body}]'
         return f'[IF {self.if_condition} THEN {self.if_body}]'
 
+class WhileStatement:
+    def __init__(self,condition,body):
+        self.condition = condition
+        self.body = body
 
-class IFCondition:
+    def __str__(self):
+        return f'[WHILE {self.condition} THEN {self.body}]'
+
+class PrintStatement: # string,stringVar,int
+    def __init__(self,type,value):
+        self.type=type
+        self.value=value
+
+    def __str__(self):
+        return f'[print {self.value}]'
+
+class Condition:
     def __init__(self,left_expression,comparision,right_expression):
         self.left_expression = left_expression
         self.comparison = comparision
@@ -61,6 +76,14 @@ class IFCondition:
 
 
 class Assignment:
+    def __init__(self,identifier,expression):
+        self.identifier = identifier
+        self.expression = expression
+
+    def __str__(self):
+        return f'[{self.identifier} EQUAL {self.expression}]';
+
+class StringAssignment:
     def __init__(self,identifier,expression):
         self.identifier = identifier
         self.expression = expression

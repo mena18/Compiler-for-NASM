@@ -1,5 +1,5 @@
-from utils import *
-from TreeNodes import *
+from utils.Tokens import *
+from utils.TreeNodes import *
 
 
 class Parser:
@@ -61,19 +61,19 @@ class Parser:
         return left
 
 
-    def if_condition(self):
+    def condition(self):
         left = self.expr()
         operation = self.tokens.current()
         self.tokens.next()
         right = self.expr()
 
-        return IFCondition(left,operation,right)
+        return Condition(left,operation,right)
 
     def if_statement(self):
         else_body = None
         self.read_token_pass('(','Missing ( in the beginnig of if condition ')
 
-        condition = self.if_condition()
+        condition = self.condition()
 
         self.read_token_pass(')','Missing ) in the end of if condition ')
 
@@ -125,19 +125,58 @@ class Parser:
         return Assignment(identifier,expression)
 
 
+    def while_statement(self):
+
+        self.read_token_pass('(','Missing ( in the beginnig of if condition ')
+
+        condition = self.condition()
+
+        self.read_token_pass(')','Missing ) in the end of if condition ')
+
+        self.read_token_pass('{','Missing { in the beginnig of if body ')
+        self.dele+=1
+
+        body = self.statements();
+
+        return WhileStatement(condition,body)
+
+    def printing(self,type):
+        self.tokens.next()
+        self.read_token_pass('(','Missing ( in the beginnig of printig ')
+
+        if(type=='str'):
+            cur_t = self.tokens.current()
+            self.tokens.next()
+            self.read_token_pass(')','Missing ) in the end of printig ')
+            self.read_token_pass(';','Missing ; in the end of printig ')
+            if(cur_t.type=="string"):
+                return PrintStatement('string',cur_t.value)
+            return PrintStatement('stringVar',cur_t.value)
+        else:
+            exp = self.expr()
+            self.read_token_pass(')','Missing ) in the end of printig ')
+            self.read_token_pass(';','Missing ; in the end of printig ')
+            return PrintStatement('int',exp)
+
 
 
     def statements(self):
         left = None;right = None
         t = self.tokens.current()
 
-
         while(t.value!='END' and t.value!='}'):
             if(t.type == 'IF'):
                 self.tokens.next()
                 right = self.if_statement()
-            elif(t.type in ('FLOAT','INT')):
+            elif(t.type == 'WHILE'):
+                self.tokens.next()
+                right = self.while_statement()
+            elif(t.type in ('STRING','INT')):
                 right = self.declarations();
+            elif(t.type == 'PRINT'):
+                right = self.printing('int');
+            elif(t.type == 'PRINTS'):
+                right = self.printing('str');
             elif(t.type == 'VAR'):
                 right = self.assignment()
             else:

@@ -1,13 +1,15 @@
-from utils import *
-from TreeNodes import *
-from intermidatecodes import *
+from utils.Tokens import *
+from utils.TreeNodes import *
+from utils.intermidatecodes import *
 
 class CodeOptimization:
-    def __init__(self,input_code,input_identifiers):
+    def __init__(self,input_code,input_identifiers,input_constants):
         self.input_code = input_code
         self.input_identifiers = input_identifiers
+        self.input_constants = input_constants
         self.output_code = self.input_code
         self.output_identifiers = self.input_identifiers
+        self.output_constants = self.input_constants
         self.optimize();
 
 
@@ -36,4 +38,4 @@ class CodeOptimization:
 
 
     def get_code(self):
-        return self.output_code,self.output_identifiers
+        return self.output_code,self.output_identifiers,self.output_constants

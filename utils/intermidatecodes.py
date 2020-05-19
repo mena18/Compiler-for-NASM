@@ -51,7 +51,13 @@ class CompareCode:
     def __str__(self):
         return f"if {self.left}{self.operation}{self.right} GOTO({self.jump})"
 
+class PrintCode:
+    def __init__(self,type,value):
+        self.type=type
+        self.value=value
 
+    def __str__(self):
+        return f'print_{self.type} {self.value}'
 
 class InterCodeArray:
     def __init__(self):

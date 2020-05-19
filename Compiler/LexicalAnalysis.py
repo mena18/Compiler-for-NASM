@@ -1,6 +1,6 @@
-from utils import Token,TokenArray
+from utils.Tokens import Token,TokenArray
 
-keyword = ['if', 'for','else', 'while','int','float']
+keyword = ['if', 'else', 'while','int','print',"prints",'string']
 comparison = ["==", ">", "<", "<=", "!=", '>=']
 
 delimiters = {
@@ -15,8 +15,8 @@ error = ['!', '@', '$', '&', '~', '`']
 
 
 seperate_operations="(){ }[]\t\n+-*/=><"
-operations = ['+', '-', '*', '/', '%', '^', '=', '&', '|', '==', '>', '<', '!', '++', '--', '+=', '!=', '-=', '&&',
-            '||', '>=', '<=']
+operations = ['+', '-', '*', '/', '=', '==', '>', '<', '!=',
+            '>=', '<=','++','--']
 
 TT = {
     '=':'Assign',
@@ -30,6 +30,8 @@ TT = {
     '-':'ARTH',
     '*':'ARTH',
     '/':'ARTH',
+    '++':'ARTH',
+    '--':'ARTH',
 }
 
 
@@ -80,6 +82,23 @@ class Lexer:
             t = Token("VAR",'V'+cur,self.line)
             self.array.push(t)
 
+    def make_comment(self):
+        self.next()
+        while (self.cur_char!='END' and self.cur_char!='#'):
+            self.next()
+        self.next()
+
+
+    def make_string(self):
+        self.next()
+        cur=""
+        while (self.cur_char!='END' and self.cur_char!='"'):
+            cur+=self.cur_char
+            self.next()
+        self.next()
+        t = Token("string",cur,self.line)
+        self.array.push(t)
+
     def make_number(self):
         num=""
         dot_count=0
@@ -110,6 +129,10 @@ class Lexer:
                 self.next()
             elif(self.cur_char in '\t '):
                 self.next()
+            elif(self.cur_char == '#'):
+                self.make_comment()
+            elif(self.cur_char == '"'):
+                self.make_string()
             elif(self.cur_char in operations):
                 self.make_operators()
             elif(self.cur_char in delimiters):

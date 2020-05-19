@@ -1,6 +1,6 @@
-from utils import *
-from TreeNodes import *
-from intermidatecodes import *
+from utils.Tokens import *
+from utils.TreeNodes import *
+from utils.intermidatecodes import *
 
 class TCounter:
     def __init__(self,char):
@@ -24,7 +24,9 @@ class IntermidateCodeGeneration:
         self.code=InterCodeArray()
         self.t = TCounter('T')
         self.l = TCounter('L')
+        self.s = TCounter('S')
         self.identifiers = {}
+        self.constants = {}
         self.execute_statement(tree_root)
 
 
@@ -49,7 +51,7 @@ class IntermidateCodeGeneration:
 
 
     def execute_if(self,root):
-        self.execute_if_condition(root.if_condition);
+        self.execute_condition(root.if_condition);
 
         body = self.l.get();self.l.increase()
         end_if = self.l.get();self.l.increase()
@@ -69,8 +71,23 @@ class IntermidateCodeGeneration:
             self.execute_statement(root.if_body)
             self.code.append(LabelCode(end_if))
 
+    def execute_while(self,root):
+        start_loop = self.l.get();self.l.increase()
+        self.code.append(LabelCode(start_loop))
 
-    def execute_if_condition(self,root):
+        self.execute_condition(root.condition);
+        body = self.l.get();self.l.increase()
+
+        end_while = self.l.get();self.l.increase()
+
+        self.code.append(JumbCode(end_while))
+        self.code.append(LabelCode(body))
+        self.execute_statement(root.body)
+        self.code.append(JumbCode(start_loop))
+        self.code.append(LabelCode(end_while))
+
+
+    def execute_condition(self,root):
         left = self.execute_exp(root.left_expression)
         compare = root.comparison.value
         right = self.execute_exp(root.right_expression)
@@ -79,6 +96,15 @@ class IntermidateCodeGeneration:
 
         self.code.append(CompareCode(left,compare,right,body))
 
+    def execute_print(self,root):
+        if(root.type=="string"):
+            self.constants[self.s.get()] = root.value
+            right = self.s.get()
+            self.s.increase()
+            self.code.append(PrintCode("string",right))
+        elif(root.type=="int"):
+            right = self.execute_exp(root.value)
+            self.code.append(PrintCode("int",right))
 
 
     def execute_declaration(self,root):
@@ -95,6 +121,10 @@ class IntermidateCodeGeneration:
             self.execute_statement(root.right)
         elif(isinstance(root,IfStatement)):
             self.execute_if(root)
+        elif(isinstance(root,WhileStatement)):
+            self.execute_while(root)
+        elif(isinstance(root,PrintStatement)):
+            self.execute_print(root)
         elif(isinstance(root,Declaration)):
             self.execute_declaration(root)
         elif(isinstance(root,Assignment)):
@@ -103,4 +133,4 @@ class IntermidateCodeGeneration:
 
 
     def get_code(self):
-        return self.code,self.identifiers
+        return self.code,self.identifiers,self.constants

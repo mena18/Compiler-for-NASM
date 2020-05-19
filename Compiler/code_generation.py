@@ -1,5 +1,5 @@
 import os
-from intermidatecodes import *
+from utils.intermidatecodes import *
 
 comparisons = {
     '<':'jl',
@@ -33,7 +33,7 @@ registers = [
 
 ]
 
-data_types={'int':4,'int32':4,'int64':8,'int16':2}
+data_types={'int':8,'int32':8,'int64':8,'int16':8}
 
 def handle_variables(a):
     if(a.isdigit()):
@@ -42,9 +42,10 @@ def handle_variables(a):
         return f'[{a}]'
 
 class CodeGeneration:
-    def __init__(self,CodeArray,identifiers):
+    def __init__(self,CodeArray,identifiers,constants):
         self.arr = CodeArray
         self.identifiers = identifiers
+        self.constants = constants
         self.f = open('output.asm','w')
 
 
@@ -68,20 +69,14 @@ class CodeGeneration:
 
 
     def start(self):
-        self.pr("""
-section .data
-\ttext db "Hello, World!",10
-section .text
-\tglobal _start
+        self.pr("""section .data\n\ttext db "Hello, World!",10\n""")
+        for i in self.constants:
+            self.pr(f'\t{i} db "{self.constants[i]}",10,0')
 
-_start:\n""")
+        self.pr("""section .text\n\tglobal _start\n\n_start:\n""")
 
     def end(self):
-        self.pr("""
-\tmov rax, 60
-\tmov rdi, 0
-\tsyscall
-        """)
+        self.pr("""\n\tmov rax, 60\n\tmov rdi, 0\n\tsyscall\n""")
 
     def generate_code(self):
         for code in self.arr.code:
@@ -93,6 +88,17 @@ _start:\n""")
                 self.generate_label(code)
             elif(isinstance(code,CompareCode)):
                 self.generate_compare(code);
+            elif(isinstance(code,PrintCode)):
+                self.generate_print(code);
+
+
+    def generate_print(self,code):
+        if(code.type=="string"):
+            self.pr(f"\tmov rax,{code.value}")
+            self.pr(f"\tcall _print_string")
+        else:
+            self.pr(f"mov rax,[{code.value}]")
+            self.pr(f"\tcall _print_num")
 
     def generate_assignment(self,code):
         left=handle_variables(code.left)
