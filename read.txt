@@ -1,11 +1,7 @@
-int a,b,i;
-a=6;
-b=12;
-i=0;
-while(i<3){
-  print(i);
-  if(a<12){a=40;}
-  print(a+3*8);
-  prints("hello world this is the end");
-  i=i+1;
-}
+int a,b,c;
+
+a=12;
+b=13;
+
+print(a);
+print(b);

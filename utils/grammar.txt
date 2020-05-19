@@ -1,8 +1,18 @@
+Statement : (Assignment | IfStatement | WhileStatement |
+            Declaration | Print)*
+
+Assignment : IDENTIFIER = arithmetic_expression ;
+IfStatement : (Condition) {Statement}
+WhileStatement : (Condition) {Statement}
+Declaration : int IDENTIFIER   (,IDENTIFIER)*  ;
+Print : print(arithmetic_expression); | prints(String)
+String : "[A-Za-z0-9_]*"
+Condition : arithmetic_expression Compare_operation arithmetic_expression
+Compare_operation : ( > | < | >= | <= | == | != )
 arithmetic_expression : term (( + | - ) term)*
 term : factor(( * | / )factor)*
-factor : (FLOAT|INT|IDENTIFIER)
+factor : (INT|IDENTIFIER| (exp) )
 IDENTIFIER : letter(letter|digit)*
 letter : A|B|C ... Z|a|b|c....z
 digit : 0|1|2|3|4|5|6|7|8|9
 INT : digit(digit)*
-FLOAT : INT.INT

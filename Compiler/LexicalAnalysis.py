@@ -44,7 +44,7 @@ class Lexer:
         self.file = list(file)+['END']
         self.array = TokenArray()
         self.cur_position=0
-        self.cur_char = self.file[0]
+        self.cur_char=self.file[0]
         self.line = 1
         self.create_tokens()
 
@@ -103,7 +103,7 @@ class Lexer:
         num=""
         dot_count=0
 
-        while(self.cur_char!='END' and self.cur_char in '0123456789.'):
+        while(self.cur_char!='END' and self.cur_char in '0123456789'):
             if(self.cur_char=="."):
                 if(dot_count==1):
                     raise Exception("many . in number in line {}".format(self.line));

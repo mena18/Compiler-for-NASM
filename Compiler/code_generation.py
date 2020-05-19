@@ -36,16 +36,17 @@ registers = [
 data_types={'int':8,'int32':8,'int64':8,'int16':8}
 
 def handle_variables(a):
-    if(a.isdigit()):
-        return a
+    if(str(a).isdigit()):
+        return int(a)
     else:
         return f'[{a}]'
 
 class CodeGeneration:
-    def __init__(self,CodeArray,identifiers,constants):
+    def __init__(self,CodeArray,identifiers,constants,tempmap):
         self.arr = CodeArray
         self.identifiers = identifiers
         self.constants = constants
+        self.tempmap = tempmap
         self.f = open('output.asm','w')
 
 
@@ -84,6 +85,8 @@ class CodeGeneration:
                 self.generate_assignment(code)
             elif(isinstance(code,JumbCode)):
                 self.generate_jump(code)
+            elif(isinstance(code,ChangeCode)):
+                self.generate_small_assignment(code)
             elif(isinstance(code,LabelCode)):
                 self.generate_label(code)
             elif(isinstance(code,CompareCode)):
@@ -97,7 +100,11 @@ class CodeGeneration:
             self.pr(f"\tmov rax,{code.value}")
             self.pr(f"\tcall _print_string")
         else:
-            self.pr(f"mov rax,[{code.value}]")
+            if(code.value in self.tempmap):
+                val = self.tempmap[code.value]
+            else:
+                val = handle_variables(code.value)
+            self.pr(f"mov rax,{val}")
             self.pr(f"\tcall _print_num")
 
     def generate_assignment(self,code):
@@ -105,6 +112,7 @@ class CodeGeneration:
         self.pr(f"\tmov rax,{left}")
         if(code.op !=None):
             right = handle_variables(code.right)
+            right = self.tempmap.get(code.right,right)
             op = operations[code.op]
 
             if(code.op in '+-'):
@@ -115,7 +123,16 @@ class CodeGeneration:
 
         self.pr(f"\tmov [{code.var}],rax")
 
-
+    def generate_small_assignment(self,code):
+        right = handle_variables(code.right)
+        right = self.tempmap.get(code.right,right)
+        op = operations[code.op]
+        if(code.op in '+-'):
+            self.pr(f"\t{op} rax,{right}")
+        else:
+            self.pr(f"\tmov rbx,{right}")
+            self.pr(f"\t{op} rbx")
+        self.pr(f"\tmov [{code.var}],rax")
 
     def generate_jump(self,code):
         self.pr(f"\tjmp {code.dist}")
@@ -126,6 +143,9 @@ class CodeGeneration:
     def generate_compare(self,code):
         left = handle_variables(code.left)
         right = handle_variables(code.right)
+        left = self.tempmap.get(code.left,left)
+        right = self.tempmap.get(code.right,right)
+
         comp = comparisons[code.operation]
         label = code.jump
         self.pr(f"\tmov rax,{left}")

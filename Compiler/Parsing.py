@@ -1,6 +1,7 @@
 from utils.Tokens import *
 from utils.TreeNodes import *
 
+comparison_operations = ['>','<','==','<=','>=','!=']
 
 class Parser:
     def __init__(self,tokens):
@@ -17,7 +18,7 @@ class Parser:
 
     def factor(self):
         tok = self.tokens.current()
-        if(tok.type in ('FLOAT','INT')):
+        if(tok.type in 'INT'):
             self.tokens.next();
             return NumberNode(tok)
         if(tok.type =="VAR"):
@@ -30,9 +31,9 @@ class Parser:
                 self.tokens.next()
                 return exp
             else:
-                raise Exception('Syntax Error Missing ) in line {} '.format(self.tokens.current().line))
+                raise Exception('Syntax Error Expected ) in line {} '.format(self.tokens.current().line))
         else:
-            raise Exception('Syntax Error : Expected Integer or float in line{} ',format(self.tokens.current().line))
+            raise Exception('Syntax Error : Expected Integer in line {} '.format(self.tokens.current().line))
 
 
 
@@ -64,6 +65,8 @@ class Parser:
     def condition(self):
         left = self.expr()
         operation = self.tokens.current()
+        if(operation.value not in comparison_operations):
+            raise Exception(f"un Expected {operation.value} in line {operation.line} Was Expecting comparison")
         self.tokens.next()
         right = self.expr()
 
@@ -71,13 +74,13 @@ class Parser:
 
     def if_statement(self):
         else_body = None
-        self.read_token_pass('(','Missing ( in the beginnig of if condition ')
+        self.read_token_pass('(','Expected ( in the beginnig of if condition ')
 
         condition = self.condition()
 
-        self.read_token_pass(')','Missing ) in the end of if condition ')
+        self.read_token_pass(')','Expected ) in the end of if condition ')
 
-        self.read_token_pass('{','Missing { in the beginnig of if body ')
+        self.read_token_pass('{','Expected { in the beginnig of if body ')
         self.dele+=1
 
         body = self.statements();
@@ -108,10 +111,12 @@ class Parser:
         self.tokens.next()
         while(self.tokens.current().value == ','):
             self.tokens.next()
+            if(self.tokens.current().type!="VAR"):
+                raise Exception(f"Syntax Error Expected Identifier in line {self.tokens.current().line}")
             lis.append(self.tokens.current())
             self.tokens.next()
 
-        self.read_token_pass(';',"Missing ; ");
+        self.read_token_pass(';',"Expected SemiColon  ");
         return Declaration(identifier_type,lis)
 
 
@@ -149,9 +154,7 @@ class Parser:
             self.tokens.next()
             self.read_token_pass(')','Missing ) in the end of printig ')
             self.read_token_pass(';','Missing ; in the end of printig ')
-            if(cur_t.type=="string"):
-                return PrintStatement('string',cur_t.value)
-            return PrintStatement('stringVar',cur_t.value)
+            return PrintStatement('string',cur_t.value)
         else:
             exp = self.expr()
             self.read_token_pass(')','Missing ) in the end of printig ')

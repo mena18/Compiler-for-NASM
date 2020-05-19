@@ -11,30 +11,29 @@ ld output.o -o output
 ./output
 """
 
-"""
-remove extra files and organize existing files
-remove float
-add print function
-add forloop
-some optimization
-"""
-
 while True:
     input()
     f = open("read.txt",'r')
     a = f.read()
 
-    # try:
-    arr = Lexer(a).get_tokens();
-    tree = Parser(arr).get_root();
-    code,identifiers,constants = IntermidateCodeGeneration(tree).get_code();
-    code,identifiers,constants = CodeOptimization(code,identifiers,constants).get_code();
-    # print(identifiers)
-    # print(constants)
-    # code.print_extra()
-    CodeGeneration(code,identifiers,constants)
-    # except Exception as e:
-    #     print(e)
+    try:
+        arr = Lexer(a).get_tokens();
+        # print(arr)
+        tree = Parser(arr).get_root();
+        # print(tree)
+        code,identifiers,constants = IntermidateCodeGeneration(tree).get_code();
+        # print(identifiers)
+        # print(constants)
+        # code.print_extra()
+        # print("-"*50)
+        code,identifiers,constants,tempmap = CodeOptimization(code,identifiers,constants).get_code();
+        # print(identifiers)
+        # print(constants)
+        # code.print_extra()
+        # print("-"*50)
+        CodeGeneration(code,identifiers,constants,tempmap)
+    except Exception as e:
+        print(e)
 
 
     f.close()
