@@ -1,7 +1,14 @@
-int a,b,c;
+int a,b,i;
 
-a=12;
-b=13;
 
-print(a);
-print(b);
+a=11;b=13;i=0;
+
+while(a<=b){
+  print(a);
+  a=a+1;
+}
+
+
+
+prints("hello world");
+

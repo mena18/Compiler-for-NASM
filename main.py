@@ -10,9 +10,10 @@ man ld
 ld output.o -o output
 ./output
 """
+counter=0;
 
 while True:
-    input()
+    counter+=1
     f = open("read.txt",'r')
     a = f.read()
 
@@ -30,10 +31,13 @@ while True:
         # print(identifiers)
         # print(constants)
         # code.print_extra()
-        # print("-"*50)
+        print("-"*50)
+        print(f"[{counter}] : ",end="\n\n")
         CodeGeneration(code,identifiers,constants,tempmap)
+        print("-"*50)
     except Exception as e:
         print(e)
 
 
     f.close()
+    input()
