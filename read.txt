@@ -1,14 +1,19 @@
-int a,b,i;
+int var1,var2,var3,var4;
 
+prints("arithmetic operation");
+var1 = 5+5;
+var2 = 10-5;
+var3 = 5*12;
+var4 = 60/10;
 
-a=11;b=13;i=0;
+print(var1);
+print(var2);
+print(var3);
+print(var4);
 
-while(a<=b){
-  print(a);
-  a=a+1;
-}
-
-
-
-prints("hello world");
+prints("priority");
+var1 = 20-3*5;
+var2 = (20-3)*5;
+print(var1);
+print(var2);
 
