@@ -1,6 +1,6 @@
 Compiler for Netwide Assembler (NASM)
 ===================
-this is basic a compiler written in python to convert easy written human language to assembly that get executed by nasm assembler in (x86-64)  Machine  it contains variable declaration , loop , if and else condition and print statement 
+this is a basic compiler written in python to convert the easy written human language to the assembly that gets executed by NASM assembler in (x86-64) Machine it contains the variable declaration, loop, if and else condition and print statement
 
 ------------------
 
